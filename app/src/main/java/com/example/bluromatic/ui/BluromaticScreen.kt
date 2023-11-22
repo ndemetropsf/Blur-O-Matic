@@ -140,11 +140,9 @@ private fun BlurActions(
                 Spacer(modifier = Modifier.width(dimensionResource(R.dimen.padding_small)))
                 FilledTonalButton({ onSeeFileClick(blurUiState.outputUri) })
                 { Text(stringResource(R.string.see_file)) }
-
             }
         }
     }
-
 }
 
 @Composable

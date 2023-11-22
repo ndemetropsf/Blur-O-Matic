@@ -15,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
-
 private const val TAG = "BlurWorker"
 
 class BlurWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
@@ -29,6 +28,10 @@ class BlurWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         )
 
         return withContext(Dispatchers.IO) {
+
+            // This is an utility function added to emulate slower work.
+            delay(DELAY_TIME_MILLIS)
+
             return@withContext try {
                 require(!resourceUri.isNullOrBlank()) {
                     val errorMessage =
@@ -37,9 +40,6 @@ class BlurWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                     errorMessage
                 }
                 val resolver = applicationContext.contentResolver
-
-                // This is a utility function added to emulate slower work.
-                delay(DELAY_TIME_MILLIS)
 
                 val picture = BitmapFactory.decodeStream(
                     resolver.openInputStream(Uri.parse(resourceUri))
@@ -51,16 +51,14 @@ class BlurWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                 val outputUri = writeBitmapToFile(applicationContext, output)
 
                 val outputData = workDataOf(KEY_IMAGE_URI to outputUri.toString())
-                Result.success(outputData)
 
-                Result.success()
+                Result.success(outputData)
             } catch (throwable: Throwable) {
                 Log.e(
                     TAG,
                     applicationContext.resources.getString(R.string.error_applying_blur),
                     throwable
                 )
-
                 Result.failure()
             }
         }
